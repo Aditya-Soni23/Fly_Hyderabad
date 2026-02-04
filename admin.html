@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Tower | Fly Hyderabad Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon: #00d2ff;
+            --deep-blue: #000c24;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: var(--deep-blue); 
+            color: #fff; 
+            background: radial-gradient(circle at top right, #001f3f, #000c24);
+            min-height: 100vh;
+        }
+
+        header {
+            height: 70px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 40px; border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;
+        }
+
+        .logo { font-family: 'Orbitron'; color: var(--neon); letter-spacing: 2px; font-size: 1.2rem; }
+
+        /* --- NEW SEARCH BAR STYLE --- */
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+        #id-search {
+            width: 100%;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            color: #fff;
+            font-family: 'Montserrat';
+            font-size: 0.8rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        #id-search:focus {
+            border-color: var(--neon);
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        h2 { font-family: 'Orbitron'; margin-bottom: 30px; text-align: center; color: #fff; }
+
+        .admin-card {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 15px; overflow: hidden; backdrop-filter: blur(20px);
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(0, 210, 255, 0.1); padding: 15px; font-size: 0.75rem; text-transform: uppercase; color: var(--neon); }
+        td { padding: 15px; border-bottom: 1px solid var(--glass-border); font-size: 0.85rem; }
+        
+        .status-cell { font-weight: 700; font-size: 0.7rem; }
+        .status-waiting { color: #ff9f43; }
+        .status-confirmed { color: #2ecc71; }
+        .status-denied { color: #e74c3c; }
+
+        .btn-group { display: flex; gap: 8px; }
+        .action-btn {
+            padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;
+            font-size: 0.7rem; font-weight: 700; transition: 0.3s;
+        }
+        .approve { background: #2ecc71; color: #fff; }
+        .deny { background: #e74c3c; color: #fff; }
+        .action-btn:hover { opacity: 0.8; transform: scale(1.05); }
+
+        .empty-msg { padding: 40px; text-align: center; opacity: 0.5; }
+        .nav-btn{
+  background: linear-gradient(90deg,#00d2ff,#3a7bd5);
+  border:none;
+  color:white;
+  padding:8px 18px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  transition:.3s;
+}
+
+.nav-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 15px #00d2ff;
+}
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">CONTROL TOWER</div>
+        <div class="search-container">
+            <input type="text" id="id-search" placeholder="Search by ID (e.g. FH-XXXX)...">
+        </div>
+        <button onclick="window.location.href='booking.html'" class="nav-btn">
+            Home
+          </button>
+          
+        <div style="font-size: 0.8rem; opacity: 0.7;">Fly Hyderabad Management</div>
+    </header>
+
+    <div class="container">
+        <h2>Live Passenger Log</h2>
+        
+        <div class="admin-card">
+            <table id="bookings-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Passenger</th>
+                        <th>Phone</th>
+                        <th>Date & Slot</th>
+                        <th>Guests</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+            <div id="no-data" class="empty-msg" style="display:none;">No matching flight requests found.</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMWTsoSytvv37fnKM4h2-9PprfEDrQJec",
+            authDomain: "fly-hyderabad.firebaseapp.com",
+            databaseURL: "https://fly-hyderabad-default-rtdb.firebaseio.com",
+            projectId: "fly-hyderabad",
+            storageBucket: "fly-hyderabad.firebasestorage.app",
+            messagingSenderId: "881806017435",
+            appId: "1:881806017435:web:3b4d7c7c04eb7ac005d73e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+        const auth = getAuth(app);
+        const bookingsRef = ref(db, 'bookings');
+
+        // Security Check
+        onAuthStateChanged(auth, (user) => {
+            if (!user || user.email !== "adityasonihyderabad@gmail.com") {
+                alert("Security Breach: Unauthorized Access Detected.");
+                window.location.replace("index.html");
+            }
+        });
+
+        let allBookings = {};
+
+        // Fetch and Render
+        onValue(bookingsRef, (snapshot) => {
+            if (snapshot.exists()) {
+                allBookings = snapshot.val();
+                renderTable(allBookings);
+            } else {
+                document.getElementById('table-body').innerHTML = "";
+                document.getElementById('no-data').style.display = 'block';
+            }
+        });
+
+        // --- FILTER LOGIC ---
+        const searchInput = document.getElementById('id-search');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toUpperCase();
+            const filtered = {};
+            
+            Object.keys(allBookings).forEach(id => {
+                // Searches by ID or Passenger Name
+                if (id.includes(searchTerm) || allBookings[id].name.toUpperCase().includes(searchTerm)) {
+                    filtered[id] = allBookings[id];
+                }
+            });
+            renderTable(filtered);
+        });
+
+        function renderTable(data) {
+            const tableBody = document.getElementById('table-body');
+            const noData = document.getElementById('no-data');
+            tableBody.innerHTML = "";
+            
+            const keys = Object.keys(data);
+            if (keys.length === 0) {
+                noData.style.display = 'block';
+                return;
+            }
+            noData.style.display = 'none';
+
+            keys.forEach(id => {
+                const booking = data[id];
+                const row = document.createElement('tr');
+                const statusClass = booking.status === "Confirmed" ? "status-confirmed" : 
+                                   booking.status === "Denied" ? "status-denied" : "status-waiting";
+
+                row.innerHTML = `
+                    <td><span style="color:var(--neon)">#${id}</span></td>
+                    <td><b>${booking.name}</b></td>
+                    <td>${booking.phone}</td>
+                    <td>${booking.date} <br> <small>${booking.slot}</small></td>
+                    <td>${booking.guests} Pax</td>
+                    <td class="status-cell ${statusClass}">${booking.status.toUpperCase()}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="action-btn approve" data-id="${id}">Approve</button>
+                            <button class="action-btn deny" data-id="${id}">Deny</button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Add Event Listeners to buttons (Needed for type="module")
+            document.querySelectorAll('.approve').forEach(btn => {
+                btn.onclick = () => updateStatus(btn.dataset.id, 'Confirmed');
+            });
+            document.querySelectorAll('.deny').forEach(btn => {
+                btn.onclick = () => updateStatus(btn.dataset.id, 'Denied');
+            });
+        }
+
+        async function updateStatus(id, newStatus) {
+            try {
+                const bookingRef = ref(db, `bookings/${id}`);
+                await update(bookingRef, { status: newStatus });
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

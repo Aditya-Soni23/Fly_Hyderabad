@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fly Hyderabad | Official Check-in</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00d2ff;
+            --pure-white: #ffffff;
+            --glass-white: rgba(255, 255, 255, 0.1);
+            --google-gray: #5f6368;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        .page-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('background.jpg') no-repeat center center/cover;
+            z-index: -2;
+            animation: slowPan 30s infinite alternate;
+        }
+
+        /* Re-positioned Airplane: Top Left */
+        .floating-airplane {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 250px;
+            z-index: -1;
+            opacity: 0.7;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.6));
+            animation: cruiseTopLeft 10s ease-in-out infinite;
+        }
+
+        @keyframes cruiseTopLeft {
+            0%, 100% { transform: translate(0, 0) rotate(-2deg); }
+            50% { transform: translate(15px, 20px) rotate(1deg); }
+        }
+
+        .login-gate { text-align: center; z-index: 10; width: 100%; max-width: 450px; padding: 20px; }
+
+        .logo-box img {
+            width: 200px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+            animation: fadeIn 1.5s ease;
+        }
+
+        .neon-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--pure-white);
+            font-size: 1.4rem;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px var(--neon-blue);
+            margin-bottom: 30px;
+        }
+
+        .auth-panel {
+            background: var(--glass-white);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .tagline {
+            color: #ccc;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        /* Enhanced High-Trust Google Button */
+        .google-auth-btn {
+            background-color: var(--pure-white);
+            color: var(--google-gray);
+            border: 1px solid #dadce0;
+            border-radius: 50px; /* More modern rounded look */
+            padding: 0 16px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 260px;
+            margin: 0 auto;
+            cursor: pointer;
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            font-weight: 500;
+            height: 48px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .google-auth-btn:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 20px rgba(255,255,255,0.2);
+            border-color: #d2e3fc;
+            transform: translateY(-1px);
+        }
+
+        .google-icon-wrapper {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .google-icon-wrapper img { width: 22px; height: 22px; }
+
+        .google-text {
+            font-size: 15px;
+            color: #3c4043;
+            letter-spacing: 0.25px;
+            margin-left: 8px;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 25px; width: 100%; text-align: center;
+            font-size: 0.7rem; color: rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+        }
+
+        @keyframes slowPan { from { transform: scale(1); } to { transform: scale(1.1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="page-bg"></div>
+    <img src="airplane.png" class="floating-airplane" alt="Flight">
+
+    <div class="login-gate">
+        <div class="logo-box"><img src="logo.png" alt="Logo"></div>
+        <h1 class="neon-title">Fly Hyderabad</h1>
+        
+        <div class="auth-panel">
+            <p class="tagline">Dine Above the Ordinary</p>
+            
+            <button id="btn-login" class="google-auth-btn">
+                <div class="google-icon-wrapper">
+                    <img src="google.png" alt="G"/>
+                </div>
+                <span class="google-text">Sign in with Google</span>
+            </button>
+        </div>
+    </div>
+
+    <footer>FLY HYDERABAD @ MALLA REDDY AIR CITY</footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMWTsoSytvv37fnKM4h2-9PprfEDrQJec",
+            authDomain: "fly-hyderabad.firebaseapp.com",
+            databaseURL: "https://fly-hyderabad-default-rtdb.firebaseio.com",
+            projectId: "fly-hyderabad",
+            storageBucket: "fly-hyderabad.firebasestorage.app",
+            messagingSenderId: "881806017435",
+            appId: "1:881806017435:web:3b4d7c7c04eb7ac005d73e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+
+        if (localStorage.getItem('fly_access_token')) {
+            window.location.replace("booking.html");
+        }
+
+        document.getElementById('btn-login').addEventListener('click', () => {
+            signInWithPopup(auth, provider).then((result) => {
+                localStorage.setItem('fly_access_token', result.user.accessToken);
+                localStorage.setItem('fly_user_email', result.user.email);
+                localStorage.setItem('fly_user_name', result.user.displayName);
+                window.location.href = "booking.html";
+            }).catch((error) => { console.error(error); });
+        });
+    </script>
+</body>
+</html>

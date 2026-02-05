@@ -1,201 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fly Hyderabad | Official Check-in</title>
-    <link rel="icon" type="image/png" href="logo.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLY HYDERABAD | The Pinnacle of Aviation Dining</title>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="logo.png">
 
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --neon-blue: #00d2ff;
-            --pure-white: #ffffff;
-            --glass-white: rgba(255, 255, 255, 0.1);
-            --google-gray: #5f6368;
-        }
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@200;400;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+  <style>
+    :root {
+      --gold: #D4AF37;
+      --deep-navy: #05070a;
+    }
+    html{ scroll-behavior: smooth;}
+    body { background: var(--deep-navy); color: white; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+    h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
 
-        body {
-            font-family: 'Montserrat', sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-        }
+    /* Premium Navigation */
+    .nav-glass {
+      background: rgba(5, 7, 10, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      transition: all 0.4s ease;
+    } 
 
-        .page-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('background.jpg') no-repeat center center/cover;
-            z-index: -2;
-            animation: slowPan 30s infinite alternate;
-        }
+    /* Boarding Pass Aesthetic */
+    .boarding-card {
+      background: rgba(5, 7, 10, 0.65);
+      backdrop-filter: blur(12px);
+      border-left: 3px solid var(--gold);
+      max-width: 550px !important;
+      padding: 2.5rem !important;
+    }
 
-        /* Re-positioned Airplane: Top Left */
-        .floating-airplane {
-            position: absolute;
-            top: 5%;
-            left: 5%;
-            width: 250px;
-            z-index: -1;
-            opacity: 0.7;
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.6));
-            animation: cruiseTopLeft 10s ease-in-out infinite;
-        }
+    .hero-text-large {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.1;
+    }
 
-        @keyframes cruiseTopLeft {
-            0%, 100% { transform: translate(0, 0) rotate(-2deg); }
-            50% { transform: translate(15px, 20px) rotate(1deg); }
-        }
+    /* Golden Button */
+    .btn-gold {
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+      transition: all 0.3s transform ease;
+      cursor: pointer;
+    }
+    .btn-gold:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+    }
 
-        .login-gate { text-align: center; z-index: 10; width: 100%; max-width: 450px; padding: 20px; }
+    /* Floating Animation */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    .float-anim { animation: float 4s ease-in-out infinite; }
 
-        .logo-box img {
-            width: 200px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
-            animation: fadeIn 1.5s ease;
-        }
+    .swiper { width: 100%; height: 100vh; position: absolute; top: 0; z-index: -1; }
+    .swiper-slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(1); }
 
-        .neon-title {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--pure-white);
-            font-size: 1.4rem;
-            letter-spacing: 4px;
-            text-shadow: 0 0 15px var(--neon-blue);
-            margin-bottom: 30px;
-        }
-
-        .auth-panel {
-            background: var(--glass-white);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 25px;
-            padding: 40px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .tagline {
-            color: #ccc;
-            letter-spacing: 2px;
-            margin-bottom: 40px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
-        /* Enhanced High-Trust Google Button */
-        .google-auth-btn {
-            background-color: var(--pure-white);
-            color: var(--google-gray);
-            border: 1px solid #dadce0;
-            border-radius: 50px; /* More modern rounded look */
-            padding: 0 16px 0 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 260px;
-            margin: 0 auto;
-            cursor: pointer;
-            font-family: 'Google Sans', 'Roboto', sans-serif;
-            font-weight: 500;
-            height: 48px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .google-auth-btn:hover {
-            background-color: #f8f9fa;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 20px rgba(255,255,255,0.2);
-            border-color: #d2e3fc;
-            transform: translateY(-1px);
-        }
-
-        .google-icon-wrapper {
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .google-icon-wrapper img { width: 22px; height: 22px; }
-
-        .google-text {
-            font-size: 15px;
-            color: #3c4043;
-            letter-spacing: 0.25px;
-            margin-left: 8px;
-        }
-
-        footer {
-            position: absolute;
-            bottom: 25px; width: 100%; text-align: center;
-            font-size: 0.7rem; color: rgba(255,255,255,0.3);
-            letter-spacing: 1px;
-        }
-
-        @keyframes slowPan { from { transform: scale(1); } to { transform: scale(1.1); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    /* Luxury Border & Shining Effects */
+    .luxury-border {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #05070a;
+      isolation: isolate;
+    }
+  
+    .luxury-border::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 16px;
+      padding: 1.5px;
+      background: conic-gradient(
+        from var(--angle, 0deg),
+        transparent 0%,
+        transparent 20%,
+        #D4AF37 40%,
+        #fef9c3 50%,
+        #D4AF37 60%,
+        transparent 80%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 10;
+    }
+  
+    .luxury-border::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      transform: skewX(-20deg);
+      transition: 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+      z-index: 5;
+      pointer-events: none;
+    }
+  
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+  
+    .luxury-border:hover::after {
+      opacity: 1;
+      animation: rotateLight 2s linear infinite;
+    }
+  
+    .luxury-border:hover::before {
+      left: 150%;
+    }
+  
+    .gallery-img {
+      width: 100%;
+      display: block;
+      transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1), filter 1s ease;
+      filter: brightness(0.85) contrast(1.1);
+    }
+  
+    .luxury-border:hover .gallery-img {
+      transform: scale(1.1) rotate(1deg);
+      filter: brightness(1.1) contrast(1);
+    }
+  
+    @keyframes rotateLight {
+      from { --angle: 0deg; }
+      to { --angle: 360deg; }
+    }
+  </style>
 </head>
 <body>
+    <div class="fixed top-[84px] left-0 w-full h-[2px] z-[101] pointer-events-none">
+        <div id="flight-path" 
+             class="h-full w-0 relative transition-all duration-75 ease-out shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+             style="background: linear-gradient(to right, #a855f7, #3b82f6, #D4AF37, #22c55e, #22d3ee);">
+          <div class="absolute right-[-10px] top-[-12px] text-[#D4AF37] drop-shadow-[0_0_10px_rgba(212,175,55,0.8)]">
+            <svg class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
 
-    <div class="page-bg"></div>
-    <img src="airplane.png" class="floating-airplane" alt="Flight">
+<nav class="nav-glass fixed top-0 w-full z-[100] px-6 py-5 flex justify-between items-center">
+  <div class="flex flex-col">
+    <span class="serif text-2xl tracking-[0.2em] text-[#D4AF37] leading-none">FLY</span>
+    <span class="text-[10px] tracking-[0.5em] uppercase text-gray-400">Hyderabad</span>
+  </div>
+  
+  <div class="hidden lg:flex items-center space-x-12 text-[11px] uppercase tracking-[0.2em] font-semibold">
+    <a href="#experience" class="hover:text-[#D4AF37] transition duration-300">The Cabin</a>
+    <a href="#gallery" class="hover:text-[#D4AF37] transition duration-300">Gallery</a>
+    <a href="#contact" class="hover:text-[#D4AF37] transition duration-300 text-green-500">Support</a>
+  </div>
 
-    <div class="login-gate">
-        <div class="logo-box"><img src="logo.png" alt="Logo"></div>
-        <h1 class="neon-title">Fly Hyderabad</h1>
-        
-        <div class="auth-panel">
-            <p class="tagline">Dine Above the Ordinary</p>
-            
-            <button id="btn-login" class="google-auth-btn">
-                <div class="google-icon-wrapper">
-                    <img src="google.png" alt="G"/>
-                </div>
-                <span class="google-text">Sign in with Google</span>
+  <button onclick="handleBookingClick()" class="btn-gold text-black px-8 py-2.5 text-xs font-bold uppercase tracking-widest rounded-sm">
+    Book Now!
+  </button>
+</nav>
+
+<section class="relative h-screen flex items-center justify-center">
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide"><img src="pic1.avif" alt="Plane Exterior"></div>
+      <div class="swiper-slide"><img src="pic2.png" alt="Cloud View"></div>
+      <div class="swiper-slide"><img src="pic3.png" alt="Luxury Interior"></div>
+      <div class="swiper-slide"><img src="pic4.png"></div>
+      <div class="swiper-slide"><img src="pic5.png"></div>
+      <div class="swiper-slide"><img src="pic6.png"></div>
+      <div class="swiper-slide"><img src="pic7.png"></div>
+      <div class="swiper-slide"><img src="pic8.png"></div>
+      <div class="swiper-slide"><img src="pic9.png"></div>
+      <div class="swiper-slide"><img src="pic10.png"></div>
+    </div>
+  </div>
+  
+  <div class="hero-overlay absolute inset-0"></div>
+
+  <div class="relative z-10 boarding-card p-10 md:p-16 mx-4 max-w-3xl float-anim" data-aos="zoom-out">
+    <p class="text-[#D4AF37] tracking-[0.4em] uppercase text-xs mb-4">Plane Restaurant</p>
+    <h1 class="text-4xl md:text-7xl mb-6 leading-tight">Dine Above the <br><span class="italic">Ordinary</span></h1>
+    <p class="text-gray-300 mb-8 max-w-md font-light leading-relaxed">Experience Hyderabad's only authentic aircraft fine-dining. From vintage wings to world-class flavors.</p>
+    <div class="flex flex-wrap gap-4">
+        <button onclick="handleBookingClick()" class="btn-gold text-black px-10 py-4 font-bold uppercase tracking-tighter shadow-xl">Book Now!</button>
+        <a href="#experience" class="border border-white/20 hover:border-[#D4AF37] px-10 py-4 font-bold uppercase tracking-tighter backdrop-blur-md transition">Explore Cabin</a>
+    </div>
+  </div>
+</section>
+
+<section id="experience" class="py-32 px-8 bg-[#05070a] relative overflow-hidden">
+  <div class="absolute top-10 left-10 opacity-5 pointer-events-none select-none">
+    <h2 class="text-[15vw] font-bold leading-none">FLIGHT</h2>
+  </div>
+
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+    <div data-aos="fade-right" class="relative z-10">
+      <div class="flex items-center gap-4 mb-6">
+        <span class="h-[1px] w-12 bg-[#D4AF37]"></span>
+        <span class="uppercase tracking-[0.5em] text-[#D4AF37] text-xs font-bold">The Cabin Experience</span>
+      </div>
+      <h2 class="text-5xl md:text-6xl text-white mb-8 leading-tight">
+        Grounding the <br><span class="italic serif text-[#D4AF37]">High Life</span>
+      </h2>
+      <p class="text-gray-400 text-lg leading-relaxed mb-10 font-light border-l-2 border-white/10 pl-6">
+        We've reimagined a retired legend of the skies. No turbulence, just timeless elegance. Fly Hyderabad offers an exclusive fuselage dining room and a wing-view terrace that redefines luxury in India.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 bg-white/5 rounded-xl border border-white/10 hover:border-[#D4AF37]/50 transition-colors">
+          <h3 class="text-[#D4AF37] mb-2 text-sm font-bold uppercase tracking-widest">The Fuselage</h3>
+          <p class="text-xs text-gray-500">Authentic restored Airbus interior with original seating luxury.</p>
+        </div>
+        <div class="p-6 bg-white/5 rounded-xl border border-white/10 hover:border-[#D4AF37]/50 transition-colors">
+          <h3 class="text-[#D4AF37] mb-2 text-sm font-bold uppercase tracking-widest">Cockpit View</h3>
+          <p class="text-xs text-gray-500">Dine near the flight deck for the ultimate captain's perspective.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative group" data-aos="fade-left">
+      <div class="luxury-border rounded-2xl relative z-20 shadow-2xl overflow-hidden">
+        <img src="pic2.png" class="gallery-img w-full h-[500px] object-cover" alt="Plane Interior">
+      </div>
+      <div class="absolute -top-6 -right-6 w-32 h-32 border-t-2 border-r-2 border-[#D4AF37] z-10"></div>
+      <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-[#D4AF37]/10 blur-[80px] rounded-full -z-10"></div>
+      <div class="absolute bottom-8 -right-4 bg-[#D4AF37] text-black p-6 rounded-sm z-30 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform cursor-default">
+        <p class="text-[10px] font-bold uppercase tracking-tighter">Altitude</p>
+        <p class="serif text-3xl font-bold">0 FT</p>
+        <p class="text-[10px] uppercase font-medium">Perfectly Grounded</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery" class="py-20 px-6">
+    <div class="max-w-7xl mx-auto text-center">
+      <h2 class="text-5xl font-serif text-[#D4AF37]" data-aos="fade-down">First Class Gallery</h2>
+      <p class="mt-4 text-gray-300 max-w-2xl mx-auto" data-aos="fade-up">Step inside the world of luxury dining inside a real aircraft — crafted for elite travelers.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-12">
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="zoom-in"><img src="pic1.avif" class="gallery-img w-full h-64 object-cover"></div>
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="fade-up"><img src="pic2.png" class="gallery-img w-full h-72 object-cover"></div>
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="fade-right"><img src="pic3.png" class="gallery-img w-full h-64 object-cover"></div>
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="fade-left"><img src="pic4.png" class="gallery-img w-full h-80 object-cover"></div>
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="zoom-in"><img src="pic5.png" class="gallery-img w-full h-72 object-cover"></div>
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="fade-up"><img src="pic6.png" class="gallery-img w-full h-64 object-cover"></div>
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="fade-right"><img src="pic7.png" class="gallery-img w-full h-80 object-cover"></div>
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="fade-left"><img src="pic8.png" class="gallery-img w-full h-72 object-cover"></div>
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="zoom-in"><img src="pic9.png" class="gallery-img w-full h-64 object-cover"></div>
+        <div class="luxury-border overflow-hidden rounded-2xl" data-aos="fade-up"><img src="pic10.png" class="gallery-img w-full h-80 object-cover"></div>
+      </div>
+    </div>
+</section>
+
+<center>
+  <section id="contact" class="py-32 px-6 relative overflow-hidden bg-[#05070a]">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#D4AF37]/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="max-w-4xl mx-auto relative z-10">
+      <div class="boarding-card p-12 md:p-20 text-center border border-white/10 backdrop-blur-xl bg-white/[0.02] rounded-3xl" data-aos="fade-up">
+        <div class="inline-block px-4 py-1 border border-[#D4AF37]/30 rounded-full mb-6">
+          <span class="text-[#D4AF37] text-[10px] uppercase tracking-[0.4em] font-bold">Priority Handling</span>
+        </div>
+        <h2 class="serif text-5xl md:text-6xl text-white mb-6">Concierge Services</h2>
+        <p class="text-gray-400 text-lg max-w-xl mx-auto mb-12 font-light leading-relaxed">For exclusive corporate events, private jet-themed parties, or bespoke culinary requests, our flight crew is at your service.</p>
+        <div class="flex flex-col items-center gap-8">
+          <a href="https://wa.me/919281621875" class="group relative flex items-center bg-[#25D366] hover:bg-[#128C7E] text-white px-10 py-5 rounded-xl transition-all duration-500 shadow-[0_15px_30px_rgba(37,211,102,0.2)]">
+            <div class="text-left"><span class="block text-[10px] uppercase tracking-widest opacity-80 mb-1">Instant Booking</span><span class="block font-bold text-lg">Chat with Concierge</span></div>
+          </a>
+          <a href="tel:+919281621875" class="text-2xl font-light text-[#D4AF37] hover:tracking-widest transition-all duration-500">+91 92816 21875</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</center>
+
+<footer class="py-10 text-center text-gray-600 text-[10px] tracking-[0.3em] uppercase">
+    &copy; 2026 Fly Hyderabad. All Rights Reserved.
+</footer>
+
+<div id="auth-modal" class="fixed inset-0 z-[200] hidden items-center justify-center px-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-[#05070a] border border-[#D4AF37]/30 p-8 md:p-12 rounded-3xl max-w-sm w-full text-center shadow-2xl relative">
+        <button onclick="toggleModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
+        <div class="flex flex-col items-center">
+            <span class="serif text-2xl tracking-[0.2em] text-[#D4AF37] mb-2">FLY HYDERABAD</span>
+            <p class="text-gray-400 text-xs uppercase tracking-widest mb-8">Dine Above the Ordinary</p>
+            <h3 class="serif text-2xl text-white mb-6">Boarding Requirement</h3>
+            <p class="text-gray-500 text-sm mb-8 leading-relaxed">Please sign in with your Google account to proceed with your booking.</p>
+            <button id="modal-google-login" class="flex items-center justify-center bg-white hover:bg-gray-100 text-gray-700 font-semibold py-3 px-6 rounded-full w-full transition-all duration-300 shadow-lg">
+                <img src="google.png" class="w-5 h-5 mr-3" alt="G">
+                Sign in with Google
             </button>
         </div>
     </div>
+</div>
 
-    <footer>FLY HYDERABAD @ MALLA REDDY AIR CITY</footer>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyDMWTsoSytvv37fnKM4h2-9PprfEDrQJec",
+        authDomain: "fly-hyderabad.firebaseapp.com",
+        projectId: "fly-hyderabad",
+        storageBucket: "fly-hyderabad.firebasestorage.app",
+        messagingSenderId: "881806017435",
+        appId: "1:881806017435:web:3b4d7c7c04eb7ac005d73e"
+    };
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDMWTsoSytvv37fnKM4h2-9PprfEDrQJec",
-            authDomain: "fly-hyderabad.firebaseapp.com",
-            databaseURL: "https://fly-hyderabad-default-rtdb.firebaseio.com",
-            projectId: "fly-hyderabad",
-            storageBucket: "fly-hyderabad.firebasestorage.app",
-            messagingSenderId: "881806017435",
-            appId: "1:881806017435:web:3b4d7c7c04eb7ac005d73e"
-        };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-        const provider = new GoogleAuthProvider();
-
+    window.handleBookingClick = function() {
         if (localStorage.getItem('fly_access_token')) {
-            window.location.replace("booking.html");
+            window.location.href = "booking.html";
+        } else {
+            toggleModal();
         }
+    };
 
-        document.getElementById('btn-login').addEventListener('click', () => {
-            signInWithPopup(auth, provider).then((result) => {
-                localStorage.setItem('fly_access_token', result.user.accessToken);
-                localStorage.setItem('fly_user_email', result.user.email);
-                localStorage.setItem('fly_user_name', result.user.displayName);
-                window.location.href = "booking.html";
-            }).catch((error) => { console.error(error); });
-        });
-    </script>
+    window.toggleModal = function() {
+        const modal = document.getElementById('auth-modal');
+        modal.classList.toggle('hidden');
+        modal.classList.toggle('flex');
+    };
+
+    document.getElementById('modal-google-login').addEventListener('click', () => {
+        signInWithPopup(auth, provider).then((result) => {
+            localStorage.setItem('fly_access_token', result.user.accessToken);
+            localStorage.setItem('fly_user_email', result.user.email);
+            localStorage.setItem('fly_user_name', result.user.displayName);
+            window.location.href = "booking.html";
+        }).catch((err) => { console.error(err); alert("Login failed."); });
+    });
+
+    AOS.init({ duration: 900, once: true });
+    new Swiper(".mySwiper", { effect: "fade", autoplay: { delay: 4000 }, loop: true });
+
+    window.addEventListener('scroll', () => {
+        const flightPath = document.getElementById('flight-path');
+        const scrollTotal = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrollProgress = (window.scrollY / scrollTotal) * 100;
+        flightPath.style.width = `${scrollProgress}%`;
+    });
+</script>
 </body>
 </html>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Tower | Fly Hyderabad Admin</title>
     <link rel="icon" type="image/png" href="logo.png">
+    
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -13,6 +14,11 @@
             --deep-blue: #000c24;
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        /* SECURITY: Hide the dashboard by default */
+        #admin-content {
+            display: none;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,11 +39,7 @@
 
         .logo { font-family: 'Orbitron'; color: var(--neon); letter-spacing: 2px; font-size: 1.2rem; }
 
-        /* --- NEW SEARCH BAR STYLE --- */
-        .search-container {
-            position: relative;
-            width: 300px;
-        }
+        .search-container { position: relative; width: 300px; }
         #id-search {
             width: 100%;
             padding: 10px 15px;
@@ -83,57 +85,47 @@
         .action-btn:hover { opacity: 0.8; transform: scale(1.05); }
 
         .empty-msg { padding: 40px; text-align: center; opacity: 0.5; }
-        .nav-btn{
-  background: linear-gradient(90deg,#00d2ff,#3a7bd5);
-  border:none;
-  color:white;
-  padding:8px 18px;
-  border-radius:20px;
-  cursor:pointer;
-  font-weight:600;
-  transition:.3s;
-}
-
-.nav-btn:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 15px #00d2ff;
-}
-
+        .nav-btn {
+            background: linear-gradient(90deg,#00d2ff,#3a7bd5);
+            border:none; color:white; padding:8px 18px; border-radius:20px;
+            cursor:pointer; font-weight:600; transition:.3s;
+        }
+        .nav-btn:hover { transform:scale(1.05); box-shadow:0 0 15px #00d2ff; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">CONTROL TOWER</div>
-        <div class="search-container">
-            <input type="text" id="id-search" placeholder="Search by ID (e.g. FH-XXXX)...">
-        </div>
-        <button onclick="window.location.href='booking.html'" class="nav-btn">
-            Home
-          </button>
-          
-        <div style="font-size: 0.8rem; opacity: 0.7;">Fly Hyderabad Management</div>
-    </header>
+    <div id="admin-content">
+        <header>
+            <div class="logo">CONTROL TOWER</div>
+            <div class="search-container">
+                <input type="text" id="id-search" placeholder="Search by ID or Name...">
+            </div>
+            <button onclick="window.location.href='index.html'" class="nav-btn">
+                Home
+            </button>
+            <div style="font-size: 0.8rem; opacity: 0.7;">Fly Hyderabad Management</div>
+        </header>
 
-    <div class="container">
-        <h2>Live Passenger Log</h2>
-        
-        <div class="admin-card">
-            <table id="bookings-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Passenger</th>
-                        <th>Phone</th>
-                        <th>Date & Slot</th>
-                        <th>Guests</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-            </table>
-            <div id="no-data" class="empty-msg" style="display:none;">No matching flight requests found.</div>
+        <div class="container">
+            <h2>Live Passenger Log</h2>
+            <div class="admin-card">
+                <table id="bookings-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Passenger</th>
+                            <th>Phone</th>
+                            <th>Date & Slot</th>
+                            <th>Guests</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+                <div id="no-data" class="empty-msg" style="display:none;">No matching flight requests found.</div>
+            </div>
         </div>
     </div>
 
@@ -157,26 +149,32 @@
         const auth = getAuth(app);
         const bookingsRef = ref(db, 'bookings');
 
-        // Security Check
+        // --- ENHANCED SECURITY CHECK ---
         onAuthStateChanged(auth, (user) => {
-            if (!user || user.email !== "adityasonihyderabad@gmail.com") {
-                alert("Security Breach: Unauthorized Access Detected.");
+            if (user && user.email === "adityasonihyderabad@gmail.com") {
+                // Verified Admin: Show content
+                document.getElementById('admin-content').style.display = 'block';
+                loadBookings();
+            } else {
+                // Not Admin: Kick them out
+                alert("Unauthorized Access. The Control Tower has been alerted.");
                 window.location.replace("index.html");
             }
         });
 
         let allBookings = {};
 
-        // Fetch and Render
-        onValue(bookingsRef, (snapshot) => {
-            if (snapshot.exists()) {
-                allBookings = snapshot.val();
-                renderTable(allBookings);
-            } else {
-                document.getElementById('table-body').innerHTML = "";
-                document.getElementById('no-data').style.display = 'block';
-            }
-        });
+        function loadBookings() {
+            onValue(bookingsRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    allBookings = snapshot.val();
+                    renderTable(allBookings);
+                } else {
+                    document.getElementById('table-body').innerHTML = "";
+                    document.getElementById('no-data').style.display = 'block';
+                }
+            });
+        }
 
         // --- FILTER LOGIC ---
         const searchInput = document.getElementById('id-search');
@@ -185,8 +183,8 @@
             const filtered = {};
             
             Object.keys(allBookings).forEach(id => {
-                // Searches by ID or Passenger Name
-                if (id.includes(searchTerm) || allBookings[id].name.toUpperCase().includes(searchTerm)) {
+                const name = allBookings[id].name ? allBookings[id].name.toUpperCase() : "";
+                if (id.includes(searchTerm) || name.includes(searchTerm)) {
                     filtered[id] = allBookings[id];
                 }
             });
@@ -217,7 +215,7 @@
                     <td>${booking.phone}</td>
                     <td>${booking.date} <br> <small>${booking.slot}</small></td>
                     <td>${booking.guests} Pax</td>
-                    <td class="status-cell ${statusClass}">${booking.status.toUpperCase()}</td>
+                    <td class="status-cell ${statusClass}">${(booking.status || 'waiting').toUpperCase()}</td>
                     <td>
                         <div class="btn-group">
                             <button class="action-btn approve" data-id="${id}">Approve</button>
@@ -228,21 +226,21 @@
                 tableBody.appendChild(row);
             });
 
-            // Add Event Listeners to buttons (Needed for type="module")
+            // Re-bind click events
             document.querySelectorAll('.approve').forEach(btn => {
                 btn.onclick = () => updateStatus(btn.dataset.id, 'Confirmed');
             });
             document.querySelectorAll('.deny').forEach(btn => {
                 btn.onclick = () => updateStatus(btn.dataset.id, 'Denied');
             });
-        }
+        }            
 
         async function updateStatus(id, newStatus) {
             try {
                 const bookingRef = ref(db, `bookings/${id}`);
                 await update(bookingRef, { status: newStatus });
             } catch (err) {
-                alert("Error: " + err.message);
+                alert("Database Error: " + err.message);
             }
         }
     </script>
